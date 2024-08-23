@@ -26,24 +26,38 @@ services:
   docker-metricbeat-02:
     container_name: docker-metricbeat-02
     hostname: docker-metricbeat
-    image: elastic/metricbeat:8.15.0
+    #image: elastic/metricbeat:8.15.0
+    image: elastic/metricbeat:7.17.11
     environment:
       TZ: America/Mexico_City
+      DBUS_SYSTEM_BUS_ADDRESS: unix:path=/hostfs/var/run/dbus/system_bus_socket
     cap_add:
       - SYS_PTRACE
       - DAC_READ_SEARCH
+      - CAP_SYS_ADMIN
     volumes:
-      - ./metricbeat-monolitic.yml:/usr/share/metricbeat/metricbeat.yml
-      - ./docker.yml:/usr/share/metricbeat/modules.d/docker.yml
+      - /var/run/dbus/system_bus_socket:/hostfs/var/run/dbus/system_bus_socket:ro
+      - ./metricbeat-monolitic.yml:/usr/share/metricbeat/metricbeat.yml:ro
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
         read_only: true
-      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-      - /proc:/hostfs/proc:ro
-      - /:/hostfs:ro
+      - type: bind
+        source: /sys/fs/cgroup
+        target: /hostfs/sys/fs/cgroup
+        read_only: true
+      - type: bind
+        source: /proc
+        target: /hostfs/proc
+        read_only: true
+      - type: bind
+        source: /
+        target: /hostfs
+        read_only: true
     user: root
-    command: ["-e", "-v", "--strict.perms=false"]
+    command: ["./metricbeat", "-e", "-v", "--strict.perms=false", "--system.hostfs=/hostfs"]
+    network_mode: host
+    cgroup: host
 
   # sys-metricbeat:
   #   container_name: sys-metricbeat
