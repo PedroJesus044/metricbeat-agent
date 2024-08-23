@@ -43,6 +43,7 @@ services:
       - /proc:/hostfs/proc:ro
       - /:/hostfs:ro
     user: root
+    command: ["-e", "-v", "--strict.perms=false"]
 
   # sys-metricbeat:
   #   container_name: sys-metricbeat
