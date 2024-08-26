@@ -1,27 +1,11 @@
 services:
+  # Métricas de Prometheus (Openshift 4)
   # prometheus-metricbeat:
   #   container_name: metricbeat
   #   image: elastic/metricbeat:8.15.0
   #   volumes:
   #     - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
   #     - ./prometheus.yml:/usr/share/metricbeat/modules.d/prometheus.yml
-
-  # docker-metricbeat:
-  #   container_name: docker-metricbeat
-  #   hostname: docker-metricbeat
-  #   image: elastic/metricbeat:8.15.0
-  #   environment:
-  #     TZ: America/Mexico_City
-  #   volumes:
-  #     - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
-  #     - ./docker.yml:/usr/share/metricbeat/modules.d/docker.yml
-  #     - type: bind
-  #       source: /var/run/docker.sock
-  #       target: /var/run/docker.sock
-  #       read_only: true
-  #     - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-  #     - /proc:/hostfs/proc:ro
-  #     - /:/hostfs:ro
 
   # Métricas de Docker
   docker-metricbeat-docker:
@@ -135,32 +119,3 @@ services:
     extra_hosts:
       - "elasticsearch-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
       - "kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
-
-  # hbr-metricbeat:
-  #   container_name: hbr-metricbeat
-  #   image: elastic/metricbeat:8.15.0
-  #   volumes:
-  #     - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
-  #     - ./system.yml:/usr/share/metricbeat/modules.d/system.yml
-  #     - ./docker.yml:/usr/share/metricbeat/docker.yml
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - type: bind
-  #       source: /proc
-  #       target: /hostfs/proc
-  #       read_only: true
-  #     - type: bind
-  #       source: /sys/fs/cgroup
-  #       target: /hostfs/sys/fs/cgroup
-  #       read_only: true
-  #     - type: bind
-  #       source: /
-  #       target: /hostfs
-  #       read_only: true
-  #     - type: bind
-  #       source: /var/run/dbus/system_bus_socket
-  #       target: /hostfs/var/run/dbus/system_bus_socket
-  #       read_only: true
-  #   environment:
-  #     - DBUS_SYSTEM_BUS_ADDRESS=unix:path=/hostfs/var/run/dbus/system_bus_socket
-  #   network_mode: host
-  #   cgroup: host
