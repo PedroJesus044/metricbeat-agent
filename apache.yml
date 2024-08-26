@@ -1,0 +1,9 @@
+# Module: apache
+# Docs: https://www.elastic.co/guide/en/beats/filebeat/main/filebeat-module-apache.html
+- module: apache
+  access:
+    enabled: true
+    var.paths: ["/httpd_logs/access_log*"]
+  error:
+    enabled: true
+    var.paths: ["/httpd_logs/error_log*"]

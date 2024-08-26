@@ -1,11 +1,12 @@
-metricbeat.config.modules:
-  #path: ${path.config}/modules.d/*.yml
-  path: ${path.config}/modules.d/docker.yml
-  reload.enabled: true
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
 
-processors:
-  - add_cloud_metadata: ~
-  - add_docker_metadata: ~
+# processors:
+#   - add_cloud_metadata: ~
+#   - add_docker_metadata: ~
+
 
 output.elasticsearch:
   #hosts: ["http://10.22.157.147:9200"]
@@ -19,5 +20,3 @@ setup.kibana:
   #host: "http://10.22.157.147:5601"
   host: "https://kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:443"
   ssl.verification_mode: none
-
-setup.ilm.overwrite: true

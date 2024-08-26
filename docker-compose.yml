@@ -23,10 +23,10 @@ services:
   #     - /proc:/hostfs/proc:ro
   #     - /:/hostfs:ro
 
-  docker-metricbeat-02:
-    container_name: docker-metricbeat-02
-    hostname: docker-metricbeat
-    #image: elastic/metricbeat:8.15.0
+  # Métricas de Docker
+  docker-metricbeat-docker:
+    container_name: docker-metricbeat-docker
+    hostname: docker-metricbeat-docker
     image: elastic/metricbeat:7.17.11
     environment:
       TZ: America/Mexico_City
@@ -58,33 +58,83 @@ services:
     command: ["./metricbeat", "-e", "-v", "--strict.perms=false", "--system.hostfs=/hostfs"]
     network_mode: host
     cgroup: host
+    extra_hosts:
+      - "elasticsearch-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
+      - "kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
 
-  # sys-metricbeat:
-  #   container_name: sys-metricbeat
-  #   image: elastic/metricbeat:8.15.0
-  #   volumes:
-  #     - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
-  #     - ./system.yml:/usr/share/metricbeat/modules.d/system.yml
-  #     - type: bind
-  #       source: /proc
-  #       target: /hostfs/proc
-  #       read_only: true
-  #     - type: bind
-  #       source: /sys/fs/cgroup
-  #       target: /hostfs/sys/fs/cgroup
-  #       read_only: true
-  #     - type: bind
-  #       source: /
-  #       target: /hostfs
-  #       read_only: true
-  #     - type: bind
-  #       source: /var/run/dbus/system_bus_socket
-  #       target: /hostfs/var/run/dbus/system_bus_socket
-  #       read_only: true
-  #   environment:
-  #     - DBUS_SYSTEM_BUS_ADDRESS=unix:path=/hostfs/var/run/dbus/system_bus_socket
-  #   network_mode: host
-  #   cgroup: host
+  # Access/Error logs de apache
+  docker-filebeat-apache:
+    container_name: docker-filebeat-apache
+    hostname: docker-filebeat-apache
+    image: elastic/filebeat:8.15.0
+    #image: elastic/filebeat:7.17.11
+    environment:
+      TZ: America/Mexico_City
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./apache.yml:/usr/share/filebeat/modules.d/apache.yml
+      - type: bind
+        source: /var/log/httpd
+        target: /httpd_logs
+        read_only: true
+    user: root
+    command: ["./filebeat", "--strict.perms=false"]
+    extra_hosts:
+      - "elasticsearch-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
+      - "kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
+
+  # Logs del sistema
+  docker-filebeat-system:
+    container_name: docker-filebeat-system
+    hostname: docker-filebeat-system
+    image: elastic/filebeat:8.15.0
+    environment:
+      TZ: America/Mexico_City
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./filebeat-system.yml:/usr/share/filebeat/modules.d/system.yml
+      - type: bind
+        source: /var/log
+        target: /system_logs
+        read_only: true
+    user: root
+    command: ["./filebeat", "--strict.perms=false"]
+    extra_hosts:
+      - "elasticsearch-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
+      - "kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
+
+  # Métricas del sistema
+  docker-metricbeat-system:
+    container_name: docker-metricbeat-system
+    hostname: docker-metricbeat-system
+    image: elastic/metricbeat:8.15.0
+    volumes:
+      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+      - ./system.yml:/usr/share/metricbeat/modules.d/system.yml
+      - type: bind
+        source: /proc
+        target: /hostfs/proc
+        read_only: true
+      - type: bind
+        source: /sys/fs/cgroup
+        target: /hostfs/sys/fs/cgroup
+        read_only: true
+      - type: bind
+        source: /
+        target: /hostfs
+        read_only: true
+      - type: bind
+        source: /var/run/dbus/system_bus_socket
+        target: /hostfs/var/run/dbus/system_bus_socket
+        read_only: true
+    environment:
+      - DBUS_SYSTEM_BUS_ADDRESS=unix:path=/hostfs/var/run/dbus/system_bus_socket
+    network_mode: host
+    cgroup: host
+    command: ["./metricbeat", "--strict.perms=false"]
+    extra_hosts:
+      - "elasticsearch-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
+      - "kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
 
   # hbr-metricbeat:
   #   container_name: hbr-metricbeat
