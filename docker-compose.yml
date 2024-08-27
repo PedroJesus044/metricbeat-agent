@@ -116,6 +116,7 @@ services:
     network_mode: host
     cgroup: host
     command: ["./metricbeat", "--strict.perms=false"]
+    user: root
     extra_hosts:
       - "elasticsearch-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
       - "kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"

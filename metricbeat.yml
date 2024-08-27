@@ -1,6 +1,6 @@
 metricbeat.config.modules:
-  #path: ${path.config}/modules.d/*.yml
-  path: ${path.config}/modules.d/docker.yml
+  path: ${path.config}/modules.d/*.yml
+  #path: ${path.config}/modules.d/docker.yml
   reload.enabled: true
 
 processors:
