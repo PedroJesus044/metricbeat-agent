@@ -119,3 +119,20 @@ services:
     extra_hosts:
       - "elasticsearch-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
       - "kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
+
+  # Logs del sistema
+  docker-filebeat-mysql:
+    container_name: docker-filebeat-mysql
+    hostname: docker-filebeat-mysql
+    image: elastic/filebeat:8.15.0
+    environment:
+      TZ: America/Mexico_City
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./mysql.yml:/usr/share/filebeat/modules.d/mysql.yml
+      - /home/esoj/Documentos/Proyectos/rocky-vm/mariadb-log:/mariadb-log
+    user: root
+    command: ["./filebeat", "--strict.perms=false"]
+    extra_hosts:
+      - "elasticsearch-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
+      - "kibana-elastic-rsyslog.apps.ocpprod.pjedomex.gob.mx:10.22.249.7"
